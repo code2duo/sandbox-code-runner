@@ -30,13 +30,13 @@ services:
     image: "redis:alpine"
 
   nginx:
-      build: nginx/
-      volumes:
-        - static_volume:/usr/src/app/static
-      ports:
-        - 8000:80
-      depends_on:
-        - backend
+    build: nginx/
+    volumes:
+      - static_volume:/usr/src/app/static
+    ports:
+      - 8000:80
+    depends_on:
+      - backend
 
 volumes:
   static_volume:
