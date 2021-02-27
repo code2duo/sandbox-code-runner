@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-docker-compose.yml
-*nginx/
+# custom
+README.md
+.gitignore
+CONTRIBUTING.md
+*.idea/

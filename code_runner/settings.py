@@ -52,6 +52,7 @@ if (
         "localhost",
         "0.0.0.0",
         "http://localhost:3000",
+        "coderunner-2bn4xipkxa-uc.a.run.app",
     ]
 
     CORS_ORIGIN_ALLOW_ALL = False
@@ -141,101 +142,108 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "code_runner.wsgi.application"
 
-# if (
-#     stageEnv not in os.environ
-#     or os.environ[stageEnv] == devStage
-#     or os.environ[stageEnv] == dockerStage
-# ):
-#     # setting logging for dev environment
-#     LOGGING = {
-#         "version": 1,
-#         "disable_existing_loggers": False,
-#         "formatters": {
-#             "verbose": {
-#                 "format": "[%(asctime)s] %(levelname)s [%(module)s:%(funcName)s:%(lineno)s] %(message)s",
-#                 "datefmt": "%d/%b/%Y %H:%M:%S",
-#             },
-#             "simple": {"format": "%(levelname)s %(message)s"},
-#         },
-#         "handlers": {
-#             "console": {
-#                 "level": "DEBUG",
-#                 "class": "logging.StreamHandler",
-#                 "stream": sys.stdout,
-#                 "formatter": "verbose",
-#             }
-#         },
-#         "loggers": {
-#             "django.utils.autoreload": {
-#                 "level": "INFO",
-#                 "handler": ["console"],
-#                 "propagate": False,
-#             },
-#             "django.db.backends": {
-#                 "handlers": ["console"],  # Quiet by default!
-#                 "propagate": False,
-#                 "level": "DEBUG",
-#             },
-#             "django.template": {
-#                 "level": "INFO",
-#                 "handler": ["console"],
-#                 "propagate": False,
-#             },
-#             "django": {
-#                 "handlers": ["console"],
-#                 "level": "DEBUG",
-#                 "propagate": False,
-#             },
-#             "null": {
-#                 "class": "logging.NullHandler",
-#             },
-#             "": {
-#                 "handlers": ["console"],
-#                 "level": "DEBUG",
-#                 "propagate": False,
-#             },
-#         },
-#     }
+if os.environ[stageEnv] == dockerStage:
+    # setting logging for dev environment
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "[%(asctime)s] %(levelname)s [%(module)s:%(funcName)s:%(lineno)s] %(message)s",
+                "datefmt": "%d/%b/%Y %H:%M:%S",
+            },
+            "simple": {"format": "%(levelname)s %(message)s"},
+        },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "stream": sys.stdout,
+                "formatter": "verbose",
+            }
+        },
+        "loggers": {
+            "django.utils.autoreload": {
+                "level": "INFO",
+                "handler": ["console"],
+                "propagate": False,
+            },
+            "django.db.backends": {
+                "handlers": ["console"],  # Quiet by default!
+                "propagate": False,
+                "level": "DEBUG",
+            },
+            "django.template": {
+                "level": "INFO",
+                "handler": ["console"],
+                "propagate": False,
+            },
+            "django": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+            "null": {
+                "class": "logging.NullHandler",
+            },
+            "": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+        },
+    }
 
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
+if (
+    stageEnv not in os.environ
+    or os.environ[stageEnv] == devStage
+    or os.environ[stageEnv] == dockerStage
+):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-
-elif os.environ[stageEnv] == dockerStage:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ["MYSQL_DATABASE"],
-            "USER": os.environ["MYSQL_USER"],
-            "PASSWORD": os.environ["MYSQL_PASSWORD"],
-            "HOST": os.environ["MYSQL_HOST"],
-            "PORT": os.environ["MYSQL_PORT"],
-        }
-    }
+# TODO add Cloud SQL
+# elif os.environ[stageEnv] == dockerStage:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.mysql",
+#             "NAME": os.environ["MYSQL_DATABASE"],
+#             "USER": os.environ["MYSQL_USER"],
+#             "PASSWORD": os.environ["MYSQL_PASSWORD"],
+#             "HOST": os.environ["MYSQL_HOST"],
+#             "PORT": os.environ["MYSQL_PORT"],
+#         }
+#     }
 
 # REDIS DATASTORE
-if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
-    # celery
-    CELERY_BROKER_URL = "redis://localhost:6379"
-    CELERY_RESULT_BACKEND = "redis://localhost:6379"
-    CELERY_ACCEPT_CONTENT = ["application/json"]
-    CELERY_RESULT_SERIALIZER = "json"
-    CELERY_TASK_SERIALIZER = "json"
+# TODO add Cloud Redis Memstore
+# if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
+#     # celery
+#     CELERY_BROKER_URL = "redis://localhost:6379"
+#     CELERY_RESULT_BACKEND = "redis://localhost:6379"
+#     CELERY_ACCEPT_CONTENT = ["application/json"]
+#     CELERY_RESULT_SERIALIZER = "json"
+#     CELERY_TASK_SERIALIZER = "json"
+#
+# elif os.environ[stageEnv] == dockerStage or os.environ[stageEnv] == prodStage:
+#     # celery
+#     CELERY_BROKER_URL = "redis://redis:6379"
+#     CELERY_RESULT_BACKEND = "redis://redis:6379"
+#     CELERY_ACCEPT_CONTENT = ["application/json"]
+#     CELERY_RESULT_SERIALIZER = "json"
+#     CELERY_TASK_SERIALIZER = "json"
 
+# RESTRICTED USER for Python Sub-process
+if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
+    RESTRICTED_USER = None
 elif os.environ[stageEnv] == dockerStage or os.environ[stageEnv] == prodStage:
-    # celery
-    CELERY_BROKER_URL = "redis://redis:6379"
-    CELERY_RESULT_BACKEND = "redis://redis:6379"
-    CELERY_ACCEPT_CONTENT = ["application/json"]
-    CELERY_RESULT_SERIALIZER = "json"
-    CELERY_TASK_SERIALIZER = "json"
+    RESTRICTED_USER = int(os.environ["RESTRICTED_USER"])
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

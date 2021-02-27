@@ -1,5 +1,8 @@
 import os
 import subprocess
+from threading import Timer
+
+from django.conf import settings
 
 from .base import BaseHandler
 
@@ -31,9 +34,19 @@ class PythonHandler(BaseHandler):
         super().__run__()
         # "cd", self.dir, "&&",
         cmd = ["python3", self.path]
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output = result.stdout.decode("utf-8")
-        err = result.stderr.decode("utf-8")
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            user=settings.RESTRICTED_USER,
+        )
+        try:
+            output, err = proc.communicate(timeout=self.timeout)
+        except subprocess.TimeoutExpired as e:
+            proc.kill()
+            output = ""
+            err = str(e)
+
         return output, err
 
     def execute(self, code: str):

@@ -21,8 +21,9 @@ class CompileCode(APIView):
         POST
         """
         data = request.POST
+        timeout = int(data["timeout"])
         HandlerClass = MAP[data["language"].lower()]
-        handler = HandlerClass(userid=data["userid"], timeout=data["timeout"])
+        handler = HandlerClass(userid=data["userid"], timeout=timeout)
         output, err = handler.execute(data["source"])
         return Response(
             data={
