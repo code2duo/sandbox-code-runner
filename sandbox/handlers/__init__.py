@@ -1,6 +1,6 @@
-from .python import *
+from .python import PythonHandler as _PythonHandler
 
 
-MAP = {
-    "python": PythonHandler,
+HandlerMapping = {
+    "python": _PythonHandler,
 }

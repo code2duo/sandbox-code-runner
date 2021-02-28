@@ -142,7 +142,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "code_runner.wsgi.application"
 
-if os.environ[stageEnv] == dockerStage:
+if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
+    pass
+elif os.environ[stageEnv] == dockerStage or os.environ[stageEnv] == prodStage:
     # setting logging for dev environment
     LOGGING = {
         "version": 1,
