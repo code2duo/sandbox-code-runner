@@ -128,8 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# custom
+# GitHub files
 README.md
 .gitignore
 CONTRIBUTING.md
 *.idea/
+
+# dev environment variables
+.env.docker

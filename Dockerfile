@@ -23,7 +23,9 @@ COPY . .
 # Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
 CMD ["gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "--timeout", "0", "code_runner.wsgi:application"]
 
+ENV RESTRICTED_USER 5000
+
 # creating a restricted user
-RUN groupadd --gid 5000 restricteduser \
-    && useradd --home-dir /home/restricteduser --create-home --uid 5000 \
-        --gid 5000 --shell /bin/sh --skel /dev/null restricteduser
+RUN groupadd --gid $RESTRICTED_USER restricteduser \
+    && useradd --home-dir /home/restricteduser --create-home --uid $RESTRICTED_USER \
+        --gid $RESTRICTED_USER --shell /bin/sh --skel /dev/null restricteduser

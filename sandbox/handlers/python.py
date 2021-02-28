@@ -45,7 +45,7 @@ class PythonHandler(BaseHandler):
         except subprocess.TimeoutExpired as e:
             proc.kill()
             output = ""
-            err = str(e)
+            err = "TLE"
 
         return output, err
 
