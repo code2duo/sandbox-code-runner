@@ -21,4 +21,4 @@ jobs:
 
       # Build and push image to Google Container Registry
       - name: Build
-        run: gcloud builds submit --tag gcr.io/$PROJECT_ID/coderunner:$GITHUB_SHA
+        run: gcloud builds submit --tag gcr.io/$PROJECT_ID/coderunner
