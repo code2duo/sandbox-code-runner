@@ -1,6 +1,5 @@
-import os
 import subprocess
-from threading import Timer
+import resource
 
 from django.conf import settings
 
@@ -41,20 +40,24 @@ class PythonHandler(BaseHandler):
             user=settings.RESTRICTED_USER,
         )
         try:
+            usage_start = resource.getrusage(resource.RUSAGE_CHILDREN)
             output, err = proc.communicate(timeout=self.timeout)
+            usage_end = resource.getrusage(resource.RUSAGE_CHILDREN)
+            exec_time = usage_end.ru_utime - usage_start.ru_utime
         except subprocess.TimeoutExpired as e:
             proc.kill()
             output = ""
             err = "TLE"
+            exec_time = None
 
-        return output, err
+        return output, err, exec_time
 
     def execute(self, code: str):
         """
         Method to be called for executing codes and returning the id of the celery process
         """
         self.__write__(code)
-        output, err = self.__run__()
+        output, err, exec_time = self.__run__()
         self.__cleanup__()
 
-        return output, err
+        return output, err, exec_time
