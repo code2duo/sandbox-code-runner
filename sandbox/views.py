@@ -45,14 +45,12 @@ class CompileCode(APIView):
         HandlerClass = HandlerMapping.get(language)
         handler = HandlerClass(userid=userid, timeout=timeout)
         # TODO add it to task queue
-        output, err, exec_time = handler.execute(source)
+        task_id = handler.execute(source)
         return Response(
             data={
                 "status": "OK",
                 "message": {
-                    "output": output if len(output) else None,
-                    "error": err if len(err) else None,
-                    "exec_time": exec_time,
+                    "task_id": task_id,
                 },
             },
             status=status.HTTP_200_OK,

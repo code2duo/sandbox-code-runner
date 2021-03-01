@@ -1,9 +1,5 @@
-import subprocess
-import resource
-
-from django.conf import settings
-
 from .base import BaseHandler
+from .tasks import ExecuteTask
 
 
 class PythonHandler(BaseHandler):
@@ -33,31 +29,17 @@ class PythonHandler(BaseHandler):
         super().__run__()
         # "cd", self.dir, "&&",
         cmd = ["python3", self.path]
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            user=settings.RESTRICTED_USER,
+        task = ExecuteTask()
+        res = task.delay(
+            cmd=cmd, timeout=self.timeout, path=self.path, queue="code_runner"
         )
-        try:
-            usage_start = resource.getrusage(resource.RUSAGE_CHILDREN)
-            output, err = proc.communicate(timeout=self.timeout)
-            usage_end = resource.getrusage(resource.RUSAGE_CHILDREN)
-            exec_time = usage_end.ru_utime - usage_start.ru_utime
-        except subprocess.TimeoutExpired as e:
-            proc.kill()
-            output = ""
-            err = "TLE"
-            exec_time = None
-
-        return output, err, exec_time
+        return res
 
     def execute(self, code: str):
         """
         Method to be called for executing codes and returning the id of the celery process
         """
         self.__write__(code)
-        output, err, exec_time = self.__run__()
-        self.__cleanup__()
+        res = self.__run__()
 
-        return output, err, exec_time
+        return res.id

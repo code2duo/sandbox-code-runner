@@ -40,6 +40,3 @@ class BaseHandler:
 
     def __run__(self):
         os.chdir(self.dir)
-
-    def __cleanup__(self):
-        os.remove(self.path)
