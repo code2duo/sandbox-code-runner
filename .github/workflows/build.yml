@@ -1,16 +1,24 @@
-name: Push to GCR GitHub Action
+name: Push to Google Container Registry
 on:
   push:
     branches:
       - prod
+env:
+  PROJECT_ID: ${{ secrets.GCLOUD_PROJECT_ID }}
 jobs:
-  build-and-push-to-gcr:
+  build:
+    name: Push to GCR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
+
+      # Setup gcloud CLI
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
-          registry: gcr.io
+          version: "290.0.1"
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-          image_name: coderunner
+
+      # Build and push image to Google Container Registry
+      - name: Build
+        run: gcloud builds submit --tag gcr.io/$PROJECT_ID/coderunner:$GITHUB_SHA
