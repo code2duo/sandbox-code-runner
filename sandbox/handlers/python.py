@@ -1,5 +1,5 @@
+from sandbox.tasks import async_execute
 from .base import BaseHandler
-from .tasks import ExecuteTask
 
 
 class PythonHandler(BaseHandler):
@@ -10,16 +10,9 @@ class PythonHandler(BaseHandler):
     FOLDER = "python"
     SUFFIX = ".py"
 
-    @staticmethod
-    def __generate_filename(suffix: str):
-        from datetime import datetime
-
-        return datetime.utcnow().strftime("%Y%m%d-%H%M%S") + suffix
-
     def __init__(self, userid: str, timeout: int):
         self.USERID = userid
-        filename = self.__generate_filename(self.SUFFIX)
-        super().__init__(filename, timeout)
+        super().__init__(timeout)
 
     def __write__(self, code: str):
         with open(self.path, "w+") as f:
@@ -29,10 +22,7 @@ class PythonHandler(BaseHandler):
         super().__run__()
         # "cd", self.dir, "&&",
         cmd = ["python3", self.path]
-        task = ExecuteTask()
-        res = task.delay(
-            cmd=cmd, timeout=self.timeout, path=self.path, queue="code_runner"
-        )
+        res = async_execute.delay(cmd, self.timeout, self.path, self.FOLDER)
         return res
 
     def execute(self, code: str):

@@ -233,6 +233,7 @@ if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
     CELERY_ACCEPT_CONTENT = ["application/json"]
     CELERY_RESULT_SERIALIZER = "json"
     CELERY_TASK_SERIALIZER = "json"
+    CELERY_TASK_TRACK_STARTED = True
     # Try 5 times. Initially try again immediately, then add 0.5 seconds for each
     # subsequent try (with a maximum of 3 seconds). This comes out to roughly 3
     # seconds of total delay (0, 0.5, 1, 1.5).
