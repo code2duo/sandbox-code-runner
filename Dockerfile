@@ -23,7 +23,8 @@ COPY . .
 # Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
 #CMD ["celery", "-A", "code_runner", "worker", "--detach", "&&", "gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "--timeout", "0", "code_runner.wsgi:application"]
 
-CMD ["./entrypoint.sh"]
+# start supervisor to run our wsgi server
+CMD supervisord -c ./supervisord.conf -n
 
 ENV RESTRICTED_USER 5000
 
