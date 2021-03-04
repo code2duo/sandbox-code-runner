@@ -15,6 +15,8 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 import environ
+
+import redis
 import google.auth
 from google.cloud import secretmanager as sm
 from dotenv import load_dotenv, find_dotenv
@@ -233,24 +235,24 @@ elif os.environ[stageEnv] == prodStage:
     DATABASES = {"default": env.db()}
 
 # REDIS DATASTORE
-# TODO add Cloud Redis Memstore
-if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
-    # celery
-    CELERY_BROKER_URL = "redis://localhost:6379"
-    CELERY_RESULT_BACKEND = "django-db"
-    CELERY_ACCEPT_CONTENT = ["application/json"]
-    CELERY_RESULT_SERIALIZER = "json"
-    CELERY_TASK_SERIALIZER = "json"
-    CELERY_TASK_TRACK_STARTED = True
-    # Try 5 times. Initially try again immediately, then add 0.5 seconds for each
-    # subsequent try (with a maximum of 3 seconds). This comes out to roughly 3
-    # seconds of total delay (0, 0.5, 1, 1.5).
-    CELERY_BROKER_TRANSPORT_OPTIONS = {
-        "max_retries": 3,
-        "interval_start": 0,
-        "interval_step": 0.2,
-        "interval_max": 0.5,
-    }
+# celery
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+redis_port = int(os.environ.get('REDIS_PORT', 6379))
+CELERY_BROKER_URL = f"redis://{redis_host}:{redis_port}"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TASK_TRACK_STARTED = True
+# Try 5 times. Initially try again immediately, then add 0.5 seconds for each
+# subsequent try (with a maximum of 3 seconds). This comes out to roughly 3
+# seconds of total delay (0, 0.5, 1, 1.5).
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "max_retries": 3,
+    "interval_start": 0,
+    "interval_step": 0.2,
+    "interval_max": 0.5,
+}
 
 # elif os.environ[stageEnv] == dockerStage or os.environ[stageEnv] == prodStage:
 #     # celery
