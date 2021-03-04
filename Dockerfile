@@ -24,7 +24,7 @@ COPY . .
 #CMD ["celery", "-A", "code_runner", "worker", "--detach", "&&", "gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "--timeout", "0", "code_runner.wsgi:application"]
 
 # start supervisor to run our wsgi server
-CMD supervisord -c ./supervisord.conf -n
+CMD ["supervisord", "-c", "./supervisord.conf", "-n"]
 
 ENV RESTRICTED_USER 5000
 
