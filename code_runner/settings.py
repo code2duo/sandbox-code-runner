@@ -74,7 +74,7 @@ elif os.environ[stageEnv] == prodStage:
     SECRET_KEY = env("SECRET_KEY")
     ALLOWED_HOSTS = ["coderunner-2bn4xipkxa-uc.a.run.app", ]
     # Default false. True allows default landing pages to be visible
-    DEBUG = env("DEBUG")
+    DEBUG = False
 
 # Application definition
 
