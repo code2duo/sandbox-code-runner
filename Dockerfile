@@ -21,7 +21,7 @@ COPY . .
 # For environments with multiple CPU cores, increase the number of workers
 # to be equal to the cores available.
 # Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
-CMD ["gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "--timeout", "0", "code_runner.wsgi:application"]
+CMD ["celery", "-A", "code_runner", "worker", "--detach", "&&", "gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "--timeout", "0", "code_runner.wsgi:application"]
 
 ENV RESTRICTED_USER 5000
 

@@ -27,19 +27,31 @@ class BaseHandler:
                 "super class variable SUFFIX must be initialised in Sub Class"
             )
 
-    def __init__(self, filename: str, timeout: int):
+    def __init__(self, timeout: int):
+        from datetime import datetime
+
         self.__check__()
 
-        self.dir = os.path.join("/tmp", self.FOLDER, self.USERID, "code")
+        self.dir = os.path.join(
+            "/tmp",
+            self.FOLDER,
+            self.USERID,
+            "code",
+            datetime.utcnow().strftime("%H%M%S"),
+        )
         try:
             os.makedirs(self.dir)
         except FileExistsError:
             pass
+
+        filename = self.__generate_filename()
         self.path = os.path.join(self.dir, filename)
         self.timeout = timeout
 
     def __run__(self):
         os.chdir(self.dir)
 
-    def __cleanup__(self):
-        os.remove(self.path)
+    def __generate_filename(self):
+        from datetime import datetime
+
+        return datetime.utcnow().strftime("%Y%m%d") + self.SUFFIX

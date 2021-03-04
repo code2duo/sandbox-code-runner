@@ -1,8 +1,12 @@
+import json
+
+from celery.states import READY_STATES
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, permissions
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_celery_results.models import TaskResult
 
 from .serializers import CompilerSerializer
 from .handlers import HandlerMapping
@@ -15,6 +19,35 @@ class CompileCode(APIView):
     """
 
     permission_classes = (permissions.AllowAny,)
+
+    def get(self, request: Request, task_id: str):
+        try:
+            task = TaskResult.objects.get(task_id=task_id)
+            return Response(
+                data={
+                    "status": "OK",
+                    "message": {
+                        "task_id": task_id,
+                        "status": task.status,
+                        "result": json.loads(task.result)
+                        if task.status in READY_STATES
+                        else None,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+        except TaskResult.DoesNotExist:
+            return Response(
+                data={
+                    "status": "ERROR",
+                    "message": {
+                        "task_id": task_id,
+                        "status": "NOT FOUND",
+                        "result": None,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
 
     # TODO drf swagger
     @swagger_auto_schema()
@@ -45,14 +78,12 @@ class CompileCode(APIView):
         HandlerClass = HandlerMapping.get(language)
         handler = HandlerClass(userid=userid, timeout=timeout)
         # TODO add it to task queue
-        output, err, exec_time = handler.execute(source)
+        task_id = handler.execute(source)
         return Response(
             data={
                 "status": "OK",
                 "message": {
-                    "output": output if len(output) else None,
-                    "error": err if len(err) else None,
-                    "exec_time": exec_time,
+                    "task_id": task_id,
                 },
             },
             status=status.HTTP_200_OK,

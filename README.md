@@ -22,4 +22,4 @@ gcloud builds submit --tag gcr.io/${PROJECT_ID}/coderunner
 
 ## Deploy
 
-We recommend doing this through the GCP Console GUI because you also need to set the environment variables.
+[Guide Followed](https://codelabs.developers.google.com/codelabs/cloud-run-django#0)
