@@ -44,9 +44,9 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 if (
-        stageEnv not in os.environ
-        or os.environ[stageEnv] == devStage
-        or os.environ[stageEnv] == dockerStage
+    stageEnv not in os.environ
+    or os.environ[stageEnv] == devStage
+    or os.environ[stageEnv] == dockerStage
 ):
     # For Developer Local Environments
     ALLOWED_HOSTS = [
@@ -72,9 +72,12 @@ elif os.environ[stageEnv] == prodStage:
     env = environ.Env()
     env.read_env(io.StringIO(payload))
     SECRET_KEY = env("SECRET_KEY")
-    ALLOWED_HOSTS = ["coderunner-2bn4xipkxa-uc.a.run.app", ]
+    ALLOWED_HOSTS = [
+        "coderunner-2bn4xipkxa-uc.a.run.app",
+        "compile.code2duo.co",
+    ]
     # Default false. True allows default landing pages to be visible
-    DEBUG = True
+    DEBUG = bool(env("DEBUG"))
 
 # Application definition
 
@@ -220,9 +223,9 @@ elif os.environ[stageEnv] == dockerStage or os.environ[stageEnv] == prodStage:
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 if (
-        stageEnv not in os.environ
-        or os.environ[stageEnv] == devStage
-        or os.environ[stageEnv] == dockerStage
+    stageEnv not in os.environ
+    or os.environ[stageEnv] == devStage
+    or os.environ[stageEnv] == dockerStage
 ):
     DATABASES = {
         "default": {
@@ -232,12 +235,29 @@ if (
     }
 elif os.environ[stageEnv] == prodStage:
     # Set this value from django-environ
-    DATABASES = {"default": env.db()}
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "HOST": f"/cloudsql/{env('DATABASE_CONNECTION_NAME')}",
+            "USER": f"{env('DATABASE_USER_NAME')}",
+            "PASSWORD": f"{env('DATABASE_PASSWORD')}",
+            "NAME": f"{env('DATABASE_NAME')}",
+        }
+    }
 
 # REDIS DATASTORE
 # celery
-redis_host = os.environ.get('REDIS_HOST', 'localhost')
-redis_port = int(os.environ.get('REDIS_PORT', 6379))
+if (
+    stageEnv not in os.environ
+    or os.environ[stageEnv] == devStage
+    or os.environ[stageEnv] == dockerStage
+):
+    redis_host = os.environ.get("REDIS_HOST", "localhost")
+    redis_port = int(os.environ.get("REDIS_PORT", 6379))
+elif os.environ[stageEnv] == prodStage:
+    redis_host = env("REDIS_HOST")
+    redis_port = int(env("REDIS_PORT"))
+
 CELERY_BROKER_URL = f"redis://{redis_host}:{redis_port}/0"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -299,6 +319,7 @@ if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
 elif os.environ[stageEnv] == prodStage:
     # Define static storage via django-storages[google]
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    GS_PROJECT_ID = env("GS_PROJECT_ID")
     STATICFILES_DIRS = []
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"

@@ -23,17 +23,15 @@ def async_execute(cmd: list, timeout: int, path: str, lang: str):
         exec_time = usage_end.ru_utime - usage_start.ru_utime
     except subprocess.TimeoutExpired:
         proc.kill()
-        output = ""
-        err = "TLE"
+        output = b""
+        err = b"TLE"
         exec_time = ""
 
     os.remove(path)
 
-    return dict(
-        {
-            "lang": lang,
-            "output": output,
-            "err": err,
-            "exec_time": exec_time,
-        }
-    )
+    return {
+        "lang": lang,
+        "output": output.decode("utf-8"),
+        "err": err.decode("utf-8"),
+        "exec_time": exec_time,
+    }
