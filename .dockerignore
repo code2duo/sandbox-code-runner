@@ -135,4 +135,5 @@ CONTRIBUTING.md
 *.idea/
 
 # dev environment variables
+.env
 .env.docker
