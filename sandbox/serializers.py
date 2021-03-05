@@ -12,5 +12,5 @@ class CompilerSerializer(serializers.Serializer):
 
     userid = serializers.CharField(max_length=8)
     language = serializers.ChoiceField(choices=LanguageChoices)
-    source = serializers.CharField(max_length=1000)
+    source = serializers.CharField(max_length=10000)
     timeout = serializers.IntegerField(min_value=1, max_value=15)
