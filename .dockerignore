@@ -133,6 +133,8 @@ README.md
 .gitignore
 CONTRIBUTING.md
 *.idea/
+.git/
+.github/
 
 # dev environment variables
 .env
