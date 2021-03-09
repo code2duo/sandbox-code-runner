@@ -54,7 +54,6 @@ if (
         "localhost",
         "0.0.0.0",
         "http://localhost:3000",
-        "coderunner-2bn4xipkxa-uc.a.run.app",
     ]
 
     CORS_ORIGIN_ALLOW_ALL = False

@@ -8,6 +8,8 @@ class CompilerSerializer(serializers.Serializer):
 
     LanguageChoices = [
         ("python", "python"),
+        ("c", "c"),
+        ("cpp", "cpp"),
     ]
 
     userid = serializers.CharField(max_length=8)
