@@ -1,14 +1,16 @@
+import os
+
 from sandbox.tasks import async_execute
 from .base import BaseHandler
 
 
-class PythonHandler(BaseHandler):
+class CPPHandler(BaseHandler):
     """
     Handler class for handling python3 code
     """
 
-    FOLDER = "python"
-    SUFFIX = ".py"
+    FOLDER = "cpp"
+    SUFFIX = ".cpp"
 
     def __init__(self, userid: str, timeout: int):
         self.USERID = userid
@@ -21,8 +23,19 @@ class PythonHandler(BaseHandler):
     def __run__(self):
         super().__run__()
 
-        cmd = [["python3", self.path]]
-        res = async_execute.delay(cmd, self.timeout, self.dir, self.FOLDER)
+        cmds = [
+            [
+                "g++",
+                "-o",
+                os.path.join(self.dir, "a.out"),
+                self.path,
+            ],
+            [
+                os.path.join(self.dir, "a.out"),
+            ],
+        ]
+
+        res = async_execute.delay(cmds, self.timeout, self.dir, self.FOLDER)
         return res
 
     def execute(self, code: str):
