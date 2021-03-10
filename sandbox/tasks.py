@@ -65,7 +65,7 @@ def async_execute(cmds: List[List[str]], timeout: int, path: str, lang: str):
     else:
         raise ValueError("cmds should be at-most length 2")
 
-    shutil.rmtree(path)
+    shutil.rmtree(path, ignore_errors=True)
 
     return {
         "lang": lang,
