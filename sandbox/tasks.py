@@ -43,7 +43,9 @@ def __execute(cmd, timeout: int):
 
 @app.task
 def async_execute(cmds: List[List[str]], timeout: int, path: str, lang: str):
-    print(path)
+    """
+    Tasks API for handling all async code compilations and executions
+    """
     if len(cmds) == 2:
         _, err = __compile(cmds[0])
         if len(err.decode("utf-8")):

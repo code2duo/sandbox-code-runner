@@ -10,6 +10,7 @@ class CompilerSerializer(serializers.Serializer):
         ("python", "python"),
         ("c", "c"),
         ("cpp", "cpp"),
+        ("java", "java"),
     ]
 
     userid = serializers.CharField(max_length=8)
