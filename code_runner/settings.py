@@ -307,6 +307,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
+
 if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -314,9 +316,23 @@ if stageEnv not in os.environ or os.environ[stageEnv] == devStage:
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 elif os.environ[stageEnv] == prodStage:
     # Define static storage via django-storages[google]
-    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    DEFAULT_FILE_STORAGE = "code_runner.gcloud.GoogleCloudMediaFileStorage"
+    STATICFILES_STORAGE = "code_runner.gcloud.GoogleCloudStaticFileStorage"
+
     GS_PROJECT_ID = env("GS_PROJECT_ID")
+    GS_STATIC_BUCKET_NAME = env("GS_STATIC_BUCKET_NAME")
+    GS_MEDIA_BUCKET_NAME = env("GS_MEDIA_BUCKET_NAME")
+
+    STATIC_URL = "https://storage.googleapis.com/{}/".format(GS_STATIC_BUCKET_NAME)
+    STATIC_ROOT = "static/"
+
+    MEDIA_URL = "https://storage.googleapis.com/{}/".format(GS_MEDIA_BUCKET_NAME)
+    MEDIA_ROOT = "media/"
+
+    UPLOAD_ROOT = "media/uploads/"
+
+    DOWNLOAD_ROOT = os.path.join(PROJECT_ROOT, "static/media/downloads")
+    DOWNLOAD_URL = STATIC_URL + "media/downloads"
+
     STATICFILES_DIRS = []
-    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     GS_DEFAULT_ACL = "publicRead"
