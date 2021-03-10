@@ -6,7 +6,7 @@ from .base import BaseHandler
 
 class CHandler(BaseHandler):
     """
-    Handler class for handling python3 code
+    Handler class for handling C code
     """
 
     FOLDER = "c"
