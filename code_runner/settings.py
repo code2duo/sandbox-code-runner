@@ -19,9 +19,6 @@ import environ
 import redis
 import google.auth
 from google.cloud import secretmanager as sm
-from dotenv import load_dotenv, find_dotenv
-
-load_dotenv(find_dotenv())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

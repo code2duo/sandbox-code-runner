@@ -1,16 +1,14 @@
-import os
-
 from sandbox.tasks import async_execute
 from .base import BaseHandler
 
 
-class CPPHandler(BaseHandler):
+class JavaHandler(BaseHandler):
     """
-    Handler class for handling C++ code
+    Handler class for handling Java code
     """
 
-    FOLDER = "cpp"
-    SUFFIX = ".cpp"
+    FOLDER = "java"
+    SUFFIX = ".java"
 
     def __init__(self, userid: str, timeout: int):
         self.USERID = userid
@@ -25,13 +23,14 @@ class CPPHandler(BaseHandler):
 
         cmds = [
             [
-                "g++",
-                "-o",
-                os.path.join(self.dir, "a.out"),
+                "javac",
                 self.path,
             ],
             [
-                os.path.join(self.dir, "a.out"),
+                "java",
+                "-cp",
+                self.dir,
+                "Solution",
             ],
         ]
 
